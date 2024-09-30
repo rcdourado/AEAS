@@ -83,7 +83,6 @@ total_a_receber = df_receitas[df_receitas['Situação'] == 'EM ATRASO']['Valor']
 col1, col2, col3 = st.columns(3)
 with col1:
     st.title("Receitas")
-    st.page_link("pages/Receitas.py", label="Ver Detalhes das Receitas")
 with col2:
     st.metric(label="Total Recebido", value=f"R$ {total_recebido:,.2f}")
 with col3:
