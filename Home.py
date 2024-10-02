@@ -10,6 +10,7 @@ inicio_mes = date(hoje.year, hoje.month, 1)
 # Carregar dados da planilha Excel no Google Drive
 df_receitas = pd.read_excel('rptReceitas.xlsx')
 df_despesas = pd.read_excel('rptDespesas.xlsx')
+df_saldo = pd.read_excel('saldoSicredi.xlsx')
 
 # Garantir que a coluna de data está no formato datetime
 df_receitas['Data Rec.'] = pd.to_datetime(df_receitas['Data Rec.'], errors='coerce')
@@ -25,18 +26,24 @@ hide_default_format = """
        <style>
         #MainMenu {visibility: hidden; }
         footer {visibility: hidden;}
-        footer {visibility: hidden;}
        </style>
        """
 st.markdown(hide_default_format, unsafe_allow_html=True)
 
 
-# Configuração do título do dashboard
+# Configuração do título do dashboard   
+saldo_total = df_saldo['Saldo'].sum()
+#st.image("img/Logo AEAS transp.png", width=150)
+
 col1, col2, col3 = st.columns(3)
 with col1:
-    st.image("img/Logo AEAS transp.png", width=150)
-with col2:
     st.title("Resumo Financeiro")
+with col3:
+    st.metric(label="Saldo Sicredi", value=f"R$ {saldo_total:,.2f}")
+#with col3:
+    #st.button(label="Receitas", use_container_width=True)
+    #st.button(label="Despesas", use_container_width=True)
+
 st.divider()
 
 # Filtros de busca
@@ -83,6 +90,7 @@ total_a_receber = df_receitas[df_receitas['Situação'] == 'EM ATRASO']['Valor']
 col1, col2, col3 = st.columns(3)
 with col1:
     st.title("Receitas")
+    st.page_link("pages/Receitas.py", label="Ver Detalhes das Receitas")
 with col2:
     st.metric(label="Total Recebido", value=f"R$ {total_recebido:,.2f}")
 with col3:
@@ -126,13 +134,14 @@ total_em_atraso = df_despesas[df_despesas['Situação'] == 'EM ATRASO']['Valor']
 total_pendente = df_despesas[df_despesas['Situação'] == 'PENDENTE']['Valor'].sum()
 
 # Exibição dos resultados DESPESAS
+st.title("Despesas")
+st.page_link("pages/Despesas.py", label="Ver Detalhes das Despesas")
 col1, col2, col3 = st.columns(3)
 with col1:
-    st.title("Despesas")
-with col2:
     st.metric(label="Total Pago", value=f"R$ {total_pago:,.2f}")
-with col3:
+with col2:
     st.metric(label="Total a Pagar", value=f"R$ {total_pendente:,.2f}")
+with col3:
     st.metric(label="Total em Atraso", value=f"R$ {total_em_atraso:,.2f}")
 
 # Gráficos
