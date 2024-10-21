@@ -30,22 +30,6 @@ hide_default_format = """
        """
 st.markdown(hide_default_format, unsafe_allow_html=True)
 
-
-# Configuração do título do dashboard   
-saldo_total = df_saldo['Saldo'].sum()
-#st.image("img/Logo AEAS transp.png", width=150)
-
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.title("Resumo Financeiro")
-with col3:
-    st.metric(label="Saldo Sicredi", value=f"R$ {saldo_total:,.2f}")
-#with col3:
-    #st.button(label="Receitas", use_container_width=True)
-    #st.button(label="Despesas", use_container_width=True)
-
-st.divider()
-
 # Filtros de busca
 with st.sidebar:
     st.title("Filtro de Dados")
@@ -70,13 +54,13 @@ if tipo != "Todos":
 
 
 ##############################################
-# RECEITAS
+# MANIPULACAO DOS DFs
 ##############################################
 # Dataframes com os boletos reemitidos separados R = Reemitidos T = total sem reemitidos
 dfR = df_receitas[df_receitas['Nº Doc.'].str.endswith("R", na=False)]
 dfT=df_receitas[~df_receitas.isin(dfR)].dropna(how = 'all')
 
-# Cálculo dos valores totais
+# Cálculo dos valores totais RECEITAS
 total_recebido = df_receitas[df_receitas['Situação'] == 'PAGO']['Valor'].sum()
 total_recebido_sem_reemitidos = dfT[dfT['Situação'] == 'PAGO']['Valor'].sum()
 total_em_atraso_sem_reemitidos = dfT[dfT['Situação'] == 'EM ATRASO']['Valor'].sum()
@@ -85,6 +69,44 @@ total_recebido_reemitidos = dfR[dfR['Situação'] == 'PAGO']['Valor'].sum()
 total_em_atraso_reemitidos = dfR[dfR['Situação'] == 'EM ATRASO']['Valor'].sum()
 total_pendente_reemitidos = dfR[dfR['Situação'] == 'PENDENTE']['Valor'].sum()
 total_a_receber = df_receitas[df_receitas['Situação'] == 'EM ATRASO']['Valor'].sum() + df_receitas[df_receitas['Situação'] == 'PENDENTE']['Valor'].sum()
+
+# Cálculo dos valores totais DESPESAS
+total_pago = df_despesas[df_despesas['Situação'] == 'PAGO']['Valor'].sum()
+total_em_atraso = df_despesas[df_despesas['Situação'] == 'EM ATRASO']['Valor'].sum()
+total_pendente = df_despesas[df_despesas['Situação'] == 'PENDENTE']['Valor'].sum()
+
+# Cálculos adicionais
+saldo_sicredi = df_saldo['Saldo'].sum()
+saldo_operacional = total_recebido - total_pago
+
+
+##############################################
+# RESUMO
+##############################################
+
+#st.image("img/Logo AEAS transp.png", width=150)
+colA, colB, colC = st.columns(3)
+with colA:
+    st.title("Resumo Financeiro")
+with colB:
+    pass
+with colC:
+    st.metric(label="Saldo Sicredi", value=f"R$ {saldo_sicredi:,.2f}")
+
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.metric(label="Total de Entradas", value=f"R$ {total_recebido:,.2f}")
+with col2:
+    st.metric(label="Total de Saídas", value=f"R$ {total_pago:,.2f}")
+with col3:
+    st.metric(label="Saldo Operacional", value=f"R$ {saldo_operacional:,.2f}")
+
+st.divider()
+st.divider()
+
+##############################################
+# RECEITAS
+##############################################
 
 # Exibição dos resultados RECEITAS
 col1, col2, col3 = st.columns(3)
@@ -116,22 +138,17 @@ with col3:
     st.metric(label="Em Atraso", value=f"R$ {total_em_atraso_reemitidos:,.2f}")
 
 # Gráficos
-st.divider()
+#st.divider()
 
-st.subheader("Gráfico de Recebíveis")
-st.text("em desenvolvimento, disponível em breve")
-st.line_chart(df_receitas, x="Data Rec.", y="Valor")
+#st.subheader("Gráfico de Recebíveis")
+#st.text("em desenvolvimento, disponível em breve")
+#st.line_chart(df_receitas, x="Data Rec.", y="Valor")
 
 st.divider()
 
 ##############################################
 # DESPESAS
 ##############################################
-
-# Cálculo dos valores totais
-total_pago = df_despesas[df_despesas['Situação'] == 'PAGO']['Valor'].sum()
-total_em_atraso = df_despesas[df_despesas['Situação'] == 'EM ATRASO']['Valor'].sum()
-total_pendente = df_despesas[df_despesas['Situação'] == 'PENDENTE']['Valor'].sum()
 
 # Exibição dos resultados DESPESAS
 st.title("Despesas")
@@ -147,9 +164,9 @@ with col3:
 # Gráficos
 st.divider()
 
-st.subheader("Gráfico das Despesas")
-st.text("em desenvolvimento, disponível em breve")
-st.line_chart(df_despesas, x="Data Pgto.", y="Valor")
+#st.subheader("Gráfico das Despesas")
+#st.text("em desenvolvimento, disponível em breve")
+#st.line_chart(df_despesas, x="Data Pgto.", y="Valor")
 
 #Rodapé
 st.divider()
