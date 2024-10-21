@@ -91,7 +91,7 @@ with colA:
 with colB:
     pass
 with colC:
-    st.metric(label="Saldo Sicredi", value=f"R$ {saldo_sicredi:,.2f}")
+    st.metric(label="Saldo Sicredi Hoje", value=f"R$ {saldo_sicredi:,.2f}")
 
 col1, col2, col3 = st.columns(3)
 with col1:
